@@ -133,3 +133,18 @@ func getBundleItems(for productId: String) -> [BundleItem] {
     }
     return result
 }
+
+func getMergedBundleItems(for productIds: [String]) -> [BundleItem] {
+    var result: [BundleItem] = []
+    var seenIds: Set<String> = []
+    for productId in productIds {
+        let items = getBundleItems(for: productId)
+        for item in items {
+            if !seenIds.contains(item.id) {
+                result.append(item)
+                seenIds.insert(item.id)
+            }
+        }
+    }
+    return result
+}

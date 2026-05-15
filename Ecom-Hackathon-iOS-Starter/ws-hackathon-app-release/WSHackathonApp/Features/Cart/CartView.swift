@@ -35,10 +35,74 @@ struct CartView: View {
                                         onAdd: { viewModel.add(item) },
                                         onRemove: { viewModel.removeItem(item) }
                                     )
-                                    BundleStripView(
-                                        productId: item.id,
-                                        cartItemIds: viewModel.items.map(\.id),
-                                        onAddBundle: { viewModel.addBundleItems($0) }
+                                }
+
+                                let mergedItems = getMergedBundleItems(for: viewModel.items.map(\.id))
+                                BundleStripView(
+                                    bundleItems: mergedItems,
+                                    cartItemIds: viewModel.items.map(\.id),
+                                    onAddBundle: { viewModel.addBundleItems($0) },
+                                    onAddSingle: { viewModel.addSingleBundleItem($0) }
+                                )
+
+                                // MARK: - Match My Style AR Button
+                                Button(action: {
+                                }) {
+                                    HStack(spacing: 12) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [
+                                                            Color(red: 0.0, green: 0.75, blue: 0.95),
+                                                            Color(red: 0.2, green: 0.4, blue: 0.9)
+                                                        ],
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
+                                                    )
+                                                )
+                                                .frame(width: 40, height: 40)
+
+                                            Image(systemName: "arkit")
+                                                .font(.system(size: 18, weight: .semibold))
+                                                .foregroundColor(.white)
+                                        }
+
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text("Match My Style")
+                                                .font(.system(size: 16, weight: .semibold))
+                                                .foregroundColor(.black)
+
+                                            Text("See items on your table in AR")
+                                                .font(.system(size: 12))
+                                                .foregroundColor(.gray)
+                                        }
+
+                                        Spacer()
+
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .fill(Color.white)
+                                            .shadow(color: Color(red: 0.0, green: 0.6, blue: 0.9).opacity(0.15), radius: 8, x: 0, y: 2)
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(
+                                                LinearGradient(
+                                                    colors: [
+                                                        Color(red: 0.0, green: 0.75, blue: 0.95).opacity(0.4),
+                                                        Color(red: 0.2, green: 0.4, blue: 0.9).opacity(0.2)
+                                                    ],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                ),
+                                                lineWidth: 1.5
+                                            )
                                     )
                                 }
                             }

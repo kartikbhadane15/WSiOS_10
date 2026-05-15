@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class HomeViewModel: ObservableObject {
     @Published var searchText: String = ""
     @Published var products: [ProductItem] = []

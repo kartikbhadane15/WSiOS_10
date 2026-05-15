@@ -1,23 +1,23 @@
 import SwiftUI
 
 struct BundleStripView: View {
-    let productId: String
+    let bundleItems: [BundleItem]
     let cartItemIds: [String]
     let onAddBundle: ([BundleItem]) -> Void
+    let onAddSingle: (BundleItem) -> Void
 
     @State private var animateIn = false
 
     private let discountRate = 0.15
 
     var body: some View {
-        let bundleItems = getBundleItems(for: productId)
         let allInCart = bundleItems.allSatisfy { cartItemIds.contains($0.id) }
 
         if !bundleItems.isEmpty && !allInCart {
             VStack(alignment: .leading, spacing: 10) {
                 headerView
-                scrollView(with: bundleItems)
-                footerView(for: bundleItems)
+                scrollView
+                footerView
             }
             .padding()
             .background(Color.white)
@@ -44,20 +44,24 @@ struct BundleStripView: View {
         }
     }
 
-    private func scrollView(with items: [BundleItem]) -> some View {
+    private var scrollView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(items) { item in
-                    BundleItemCard(item: item)
+                ForEach(bundleItems) { item in
+                    BundleItemCard(
+                        item: item,
+                        discountRate: discountRate,
+                        onAddSingle: onAddSingle
+                    )
                 }
             }
         }
     }
 
-    private func footerView(for items: [BundleItem]) -> some View {
+    private var footerView: some View {
         VStack(spacing: 10) {
             HStack {
-                let originalTotal = items.reduce(0) { $0 + $1.originalPrice }
+                let originalTotal = bundleItems.reduce(0) { $0 + $1.originalPrice }
                 let discount = originalTotal * discountRate
                 let bundlePrice = originalTotal - discount
 
@@ -83,8 +87,8 @@ struct BundleStripView: View {
                     .cornerRadius(8)
             }
 
-            Button(action: { onAddBundle(items) }) {
-                Text("Add all \(items.count)")
+            Button(action: { onAddBundle(bundleItems) }) {
+                Text("Add all \(bundleItems.count)")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
@@ -99,14 +103,28 @@ struct BundleStripView: View {
 
 private struct BundleItemCard: View {
     let item: BundleItem
+    let discountRate: Double
+    let onAddSingle: (BundleItem) -> Void
 
     var body: some View {
         VStack(spacing: 6) {
-            let url = URL(string: AppConstants.API.imageBasePath + item.imageName)
-            CustomAsyncImage(url: url)
-                .frame(width: 60, height: 60)
-                .cornerRadius(6)
-                .clipped()
+            ZStack(alignment: .bottomTrailing) {
+                let url = URL(string: AppConstants.API.imageBasePath + item.imageName)
+                CustomAsyncImage(url: url)
+                    .frame(width: 60, height: 60)
+                    .cornerRadius(6)
+                    .clipped()
+
+                Button(action: { onAddSingle(item) }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.white)
+                        .frame(width: 20, height: 20)
+                        .background(Color.black)
+                        .clipShape(Circle())
+                }
+                .offset(x: 4, y: 4)
+            }
 
             Text(item.name)
                 .font(.caption)
@@ -118,6 +136,12 @@ private struct BundleItemCard: View {
                 .font(.caption2)
                 .strikethrough()
                 .foregroundColor(.gray)
+
+            let discountedPrice = item.originalPrice * (1 - discountRate)
+            Text("$\(discountedPrice, specifier: "%.2f")")
+                .font(.caption2)
+                .fontWeight(.bold)
+                .foregroundColor(.black)
         }
         .frame(width: 100)
         .padding(8)
