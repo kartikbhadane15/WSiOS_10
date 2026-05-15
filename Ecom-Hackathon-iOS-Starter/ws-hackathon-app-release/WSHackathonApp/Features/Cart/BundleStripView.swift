@@ -8,8 +8,6 @@ struct BundleStripView: View {
 
     @State private var animateIn = false
 
-    private let discountRate = 0.15
-
     private var filteredItems: [BundleItem] {
         bundleItems.filter { !cartItemIds.contains($0.id) }
     }
@@ -62,44 +60,15 @@ struct BundleStripView: View {
     }
 
     private func footerView(for items: [BundleItem]) -> some View {
-        VStack(spacing: 10) {
-            HStack {
-                let originalTotal = items.reduce(0) { $0 + $1.originalPrice }
-                let discount = originalTotal * discountRate
-                let bundlePrice = originalTotal - discount
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("$\(originalTotal, specifier: "%.2f")")
-                        .font(.caption)
-                        .strikethrough()
-                        .foregroundColor(.gray)
-                    Text("$\(bundlePrice, specifier: "%.2f")")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                }
-
-                Spacer()
-
-                Text("Save $\(discount, specifier: "%.2f")")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.green)
-                    .cornerRadius(8)
-            }
-
-            Button(action: { onAddBundle(items) }) {
-                Text("Add all \(items.count)")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding(10)
-                    .background(Color.black)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
+        Button(action: { onAddBundle(items) }) {
+            Text("Add all")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .frame(maxWidth: .infinity)
+                .padding(10)
+                .background(Color.black)
+                .foregroundColor(.white)
+                .cornerRadius(8)
         }
     }
 }
