@@ -11,6 +11,7 @@ struct CartView: View {
     @StateObject private var viewModel = CartViewModel()
     @EnvironmentObject var cartRepository: CartRepository
     @EnvironmentObject var tabBarVM: WSTabBarViewModel
+    @State private var showTableScapeAR = false
     
     var body: some View {
         NavigationStack {
@@ -34,6 +35,68 @@ struct CartView: View {
                                         item: item,
                                         onAdd: { viewModel.add(item) },
                                         onRemove: { viewModel.removeItem(item) }
+                                    )
+                                }
+                                
+                                // MARK: - Match My Style AR Button
+                                Button(action: {
+                                    showTableScapeAR = true
+                                }) {
+                                    HStack(spacing: 12) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [
+                                                            Color(red: 0.0, green: 0.75, blue: 0.95),
+                                                            Color(red: 0.2, green: 0.4, blue: 0.9)
+                                                        ],
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
+                                                    )
+                                                )
+                                                .frame(width: 40, height: 40)
+                                            
+                                            Image(systemName: "arkit")
+                                                .font(.system(size: 18, weight: .semibold))
+                                                .foregroundColor(.white)
+                                        }
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(AppStrings.TableScape.matchMyStyle)
+                                                .font(.system(size: 16, weight: .semibold))
+                                                .foregroundColor(.black)
+                                            
+                                            Text(AppStrings.TableScape.matchMyStyleSubtitle)
+                                                .font(.system(size: 12))
+                                                .foregroundColor(.gray)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .fill(Color.white)
+                                            .shadow(color: Color(red: 0.0, green: 0.6, blue: 0.9).opacity(0.15), radius: 8, x: 0, y: 2)
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 14)
+                                            .stroke(
+                                                LinearGradient(
+                                                    colors: [
+                                                        Color(red: 0.0, green: 0.75, blue: 0.95).opacity(0.4),
+                                                        Color(red: 0.2, green: 0.4, blue: 0.9).opacity(0.2)
+                                                    ],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                ),
+                                                lineWidth: 1.5
+                                            )
                                     )
                                 }
                             }
@@ -80,5 +143,9 @@ struct CartView: View {
                 viewModel.bind(repository: cartRepository)
             }
         }
+        .fullScreenCover(isPresented: $showTableScapeAR) {
+            TableScapeVisionView(cartItems: viewModel.items)
+        }
     }
 }
+
