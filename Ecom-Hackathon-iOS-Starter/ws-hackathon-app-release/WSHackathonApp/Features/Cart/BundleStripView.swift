@@ -10,14 +10,18 @@ struct BundleStripView: View {
 
     private let discountRate = 0.15
 
-    var body: some View {
-        let allInCart = bundleItems.allSatisfy { cartItemIds.contains($0.id) }
+    private var filteredItems: [BundleItem] {
+        bundleItems.filter { !cartItemIds.contains($0.id) }
+    }
 
-        if !bundleItems.isEmpty && !allInCart {
+    var body: some View {
+        let items = filteredItems
+
+        if !items.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 headerView
-                scrollView
-                footerView
+                scrollView(with: items)
+                footerView(for: items)
             }
             .padding()
             .background(Color.white)
@@ -44,13 +48,12 @@ struct BundleStripView: View {
         }
     }
 
-    private var scrollView: some View {
+    private func scrollView(with items: [BundleItem]) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(bundleItems) { item in
+                ForEach(items) { item in
                     BundleItemCard(
                         item: item,
-                        discountRate: discountRate,
                         onAddSingle: onAddSingle
                     )
                 }
@@ -58,10 +61,10 @@ struct BundleStripView: View {
         }
     }
 
-    private var footerView: some View {
+    private func footerView(for items: [BundleItem]) -> some View {
         VStack(spacing: 10) {
             HStack {
-                let originalTotal = bundleItems.reduce(0) { $0 + $1.originalPrice }
+                let originalTotal = items.reduce(0) { $0 + $1.originalPrice }
                 let discount = originalTotal * discountRate
                 let bundlePrice = originalTotal - discount
 
@@ -87,8 +90,8 @@ struct BundleStripView: View {
                     .cornerRadius(8)
             }
 
-            Button(action: { onAddBundle(bundleItems) }) {
-                Text("Add all \(bundleItems.count)")
+            Button(action: { onAddBundle(items) }) {
+                Text("Add all \(items.count)")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity)
@@ -103,7 +106,6 @@ struct BundleStripView: View {
 
 private struct BundleItemCard: View {
     let item: BundleItem
-    let discountRate: Double
     let onAddSingle: (BundleItem) -> Void
 
     var body: some View {
@@ -133,12 +135,6 @@ private struct BundleItemCard: View {
                 .frame(width: 90)
 
             Text("$\(item.originalPrice, specifier: "%.2f")")
-                .font(.caption2)
-                .strikethrough()
-                .foregroundColor(.gray)
-
-            let discountedPrice = item.originalPrice * (1 - discountRate)
-            Text("$\(discountedPrice, specifier: "%.2f")")
                 .font(.caption2)
                 .fontWeight(.bold)
                 .foregroundColor(.black)
