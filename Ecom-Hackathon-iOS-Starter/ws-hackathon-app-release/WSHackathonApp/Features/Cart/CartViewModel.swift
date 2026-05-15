@@ -41,5 +41,11 @@ final class CartViewModel: ObservableObject {
     func add(_ item: CartItem) {
         repository?.increaseQuantity(productId: item.id)
     }
+
+    func addBundleItems(_ bundleItems: [BundleItem]) {
+        for item in bundleItems {
+            repository?.addProduct(id: item.id, title: item.name, price: item.originalPrice, path: item.imageName)
+        }
+    }
     
 }

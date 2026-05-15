@@ -55,4 +55,20 @@ final class CartRepository: ObservableObject {
         guard let index = items.firstIndex(where: { $0.id == productId }) else { return }
         items[index].quantity += 1
     }
+
+    // MARK: - Add Item by Identifier
+    func addProduct(id: String, title: String, price: Double, path: String?, quantity: Int = 1) {
+        if let index = items.firstIndex(where: { $0.id == id }) {
+            items[index].quantity += quantity
+        } else {
+            let newItem = CartItem(
+                id: id,
+                title: title,
+                price: price,
+                path: path,
+                quantity: quantity
+            )
+            items.append(newItem)
+        }
+    }
 }

@@ -35,6 +35,11 @@ struct CartView: View {
                                         onAdd: { viewModel.add(item) },
                                         onRemove: { viewModel.removeItem(item) }
                                     )
+                                    BundleStripView(
+                                        productId: item.id,
+                                        cartItemIds: viewModel.items.map(\.id),
+                                        onAddBundle: { viewModel.addBundleItems($0) }
+                                    )
                                 }
                             }
                             .padding(16)
