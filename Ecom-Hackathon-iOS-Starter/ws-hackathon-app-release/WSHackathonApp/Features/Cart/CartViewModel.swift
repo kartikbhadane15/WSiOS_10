@@ -15,6 +15,7 @@ final class CartViewModel: ObservableObject {
     @Published var isGift: Bool = false
     @Published var giftMessage: String = ""
     @Published var includesGiftWrap: Bool = false
+    @Published var hesitationDetector = HesitationDetector()
     private var cancellable: AnyCancellable?
     private var repository: CartRepository?
     
@@ -52,11 +53,16 @@ final class CartViewModel: ObservableObject {
     }
     
     func removeItem(_ item: CartItem) {
-        repository?.remove(productId: item.id)
+        let itemId = item.id
+        repository?.remove(productId: itemId)
+        let newQty = repository?.items.first(where: { $0.id == itemId })?.quantity ?? 0
+        hesitationDetector.recordQuantityChange(for: itemId, quantity: newQty)
     }
     
     func add(_ item: CartItem) {
         repository?.increaseQuantity(productId: item.id)
+        let newQty = repository?.items.first(where: { $0.id == item.id })?.quantity ?? 0
+        hesitationDetector.recordQuantityChange(for: item.id, quantity: newQty)
     }
 
     func addBundleItems(_ bundleItems: [BundleItem]) {

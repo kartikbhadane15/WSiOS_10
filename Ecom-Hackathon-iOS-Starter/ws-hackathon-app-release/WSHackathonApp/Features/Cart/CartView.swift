@@ -30,6 +30,11 @@ struct CartView: View {
                         
                         ScrollView {
                             VStack(spacing: 16) {
+                                if viewModel.hesitationDetector.isHesitating {
+                                    nudgeCard
+                                        .transition(.opacity.combined(with: .move(edge: .top)))
+                                }
+
                                 ForEach(viewModel.items) { item in
                                     CartItemRow(
                                         item: item,
@@ -179,7 +184,47 @@ struct CartView: View {
             Task {
                 viewModel.bind(repository: cartRepository)
             }
+            viewModel.hesitationDetector.startCartTimer()
         }
+        .onDisappear {
+            viewModel.hesitationDetector.cancelCartTimer()
+        }
+        .onChange(of: tabBarVM.selectedTab) { newTab in
+            let name: String
+            switch newTab {
+            case .cart: name = "cart"
+            case .home: name = "home"
+            default: name = "other"
+            }
+            viewModel.hesitationDetector.recordTabSwitch(to: name)
+        }
+    }
+
+    private var nudgeCard: some View {
+        HStack(spacing: 10) {
+            Text("⭐")
+                .font(.system(size: 16))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("This is a 4.9★ bestseller.")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.black)
+                Text("38 people bought it this week.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color(red: 255/255, green: 249/255, blue: 230/255))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color(red: 245/255, green: 200/255, blue: 66/255), lineWidth: 1)
+        )
+        .cornerRadius(12)
     }
 
     @ViewBuilder
