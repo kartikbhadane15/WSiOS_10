@@ -6,7 +6,7 @@
 //
 
 import Foundation
-struct CartItem: Identifiable {
+struct CartItem: Identifiable, Equatable {
     let id: String
     let title: String
     let price: Double
@@ -18,5 +18,9 @@ struct CartItem: Identifiable {
             return URL(string: AppConstants.API.imageBasePath + imageUrl)
         }
         return nil
+    }
+
+    static func == (lhs: CartItem, rhs: CartItem) -> Bool {
+        lhs.id == rhs.id && lhs.quantity == rhs.quantity
     }
 }
