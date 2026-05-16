@@ -51,5 +51,9 @@ final class CartViewModel: ObservableObject {
     func addSingleBundleItem(_ item: BundleItem) {
         repository?.addProduct(id: item.id, title: item.name, price: item.originalPrice, path: item.imageName)
     }
+
+    func clearCart() {
+        repository?.clearAll()
+    }
     
 }

@@ -56,6 +56,11 @@ final class CartRepository: ObservableObject {
         items[index].quantity += 1
     }
 
+    // MARK: - Clear All Items
+    func clearAll() {
+        items.removeAll()
+    }
+
     // MARK: - Add Item by Identifier
     func addProduct(id: String, title: String, price: Double, path: String?, quantity: Int = 1) {
         if let index = items.firstIndex(where: { $0.id == id }) {

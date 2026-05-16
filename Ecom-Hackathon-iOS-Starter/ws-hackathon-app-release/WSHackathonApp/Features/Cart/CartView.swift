@@ -11,6 +11,7 @@ struct CartView: View {
     @StateObject private var viewModel = CartViewModel()
     @EnvironmentObject var cartRepository: CartRepository
     @EnvironmentObject var tabBarVM: WSTabBarViewModel
+    @State private var showOrderSummary = false
     
     var body: some View {
         NavigationStack {
@@ -124,7 +125,7 @@ struct CartView: View {
                             }
                             
                             Button(action: {
-                                // TODO: - Implement checkout flow
+                                showOrderSummary = true
                             }) {
                                 Text(AppStrings.Cart.checkoutButton)
                                     .fontWeight(.semibold)
@@ -133,6 +134,9 @@ struct CartView: View {
                                     .background(Color.black)
                                     .foregroundColor(.white)
                                     .cornerRadius(10)
+                            }
+                            .sheet(isPresented: $showOrderSummary) {
+                                OrderSummaryView(viewModel: viewModel)
                             }
                         }
                         .padding()
