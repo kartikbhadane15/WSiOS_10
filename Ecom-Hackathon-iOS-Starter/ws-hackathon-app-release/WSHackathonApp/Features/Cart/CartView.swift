@@ -127,7 +127,7 @@ struct CartView: View {
                                     .font(.subheadline)
                             }
                             
-                            if viewModel.giftOptions.includesGiftWrap {
+                            if viewModel.includesGiftWrap {
                                 HStack {
                                     Text("Gift Wrap")
                                         .font(.subheadline)
@@ -135,7 +135,7 @@ struct CartView: View {
                                     
                                     Spacer()
                                     
-                                    Text(String(format: "+$%.2f", viewModel.giftOptions.giftWrapPrice))
+                                    Text("+$2.00")
                                         .font(.subheadline)
                                 }
                             }
@@ -185,42 +185,16 @@ struct CartView: View {
     @ViewBuilder
     private var giftingSection: some View {
         VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                Button(action: {
-                    withAnimation(.easeOut(duration: 0.3)) {
-                        viewModel.setGiftMode(false)
-                    }
-                }) {
-                    Text("For Myself")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding(12)
-                        .background(viewModel.giftOptions.isGift ? Color.white : Color.black)
-                        .foregroundColor(viewModel.giftOptions.isGift ? .black : .white)
-                }
-
-                Button(action: {
-                    withAnimation(.easeOut(duration: 0.3)) {
-                        viewModel.setGiftMode(true)
-                    }
-                }) {
-                    Text("It's a Gift 🎁")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding(12)
-                        .background(viewModel.giftOptions.isGift ? Color.black : Color.white)
-                        .foregroundColor(viewModel.giftOptions.isGift ? .white : .black)
-                }
+            Picker("Order Type", selection: $viewModel.isGift) {
+                Text("For Myself").tag(false)
+                Text("It's a Gift 🎁").tag(true)
             }
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.black, lineWidth: 1.5)
-            )
+            .pickerStyle(.segmented)
+            .onChange(of: viewModel.isGift) { _ in
+                withAnimation(.easeOut(duration: 0.3)) { }
+            }
 
-            if viewModel.giftOptions.isGift {
+            if viewModel.isGift {
                 VStack(spacing: 14) {
                     HStack(spacing: 8) {
                         Image(systemName: "heart")
@@ -233,20 +207,20 @@ struct CartView: View {
                         Spacer()
                     }
 
-                    TextField("Write a message for your loved one", text: $viewModel.giftOptions.giftMessage)
+                    TextField("Write a message for your loved one", text: $viewModel.giftMessage)
                         .font(.subheadline)
                         .padding(12)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
                                 .stroke(Color(.systemGray4), lineWidth: 1)
                         )
-                        .onChange(of: viewModel.giftOptions.giftMessage) { newValue in
+                        .onChange(of: viewModel.giftMessage) { newValue in
                             if newValue.count > 150 {
-                                viewModel.giftOptions.giftMessage = String(newValue.prefix(150))
+                                viewModel.giftMessage = String(newValue.prefix(150))
                             }
                         }
 
-                    Text("\(150 - viewModel.giftOptions.giftMessage.count) characters remaining")
+                    Text("\(150 - viewModel.giftMessage.count) characters remaining")
                         .font(.caption)
                         .foregroundColor(.gray)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -275,7 +249,7 @@ struct CartView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
 
-                        Toggle("", isOn: $viewModel.giftOptions.includesGiftWrap)
+                        Toggle("", isOn: $viewModel.includesGiftWrap)
                             .labelsHidden()
                             .tint(.black)
                     }

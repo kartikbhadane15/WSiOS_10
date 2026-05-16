@@ -12,7 +12,9 @@ import Combine
 final class CartViewModel: ObservableObject {
 
     @Published private(set) var items: [CartItem] = []
-    @Published var giftOptions = GiftOptions()
+    @Published var isGift: Bool = false
+    @Published var giftMessage: String = ""
+    @Published var includesGiftWrap: Bool = false
     private var cancellable: AnyCancellable?
     private var repository: CartRepository?
     
@@ -35,12 +37,10 @@ final class CartViewModel: ObservableObject {
         repository?.totalPrice ?? 0
     }
 
-    var giftWrapCharge: Double {
-        giftOptions.includesGiftWrap ? giftOptions.giftWrapPrice : 0
-    }
+    var giftWrapPrice: Double { includesGiftWrap ? 2.00 : 0.00 }
 
     var finalTotal: Double {
-        baseTotal + giftWrapCharge
+        baseTotal + giftWrapPrice
     }
 
     var totalPriceText: String {
@@ -71,14 +71,6 @@ final class CartViewModel: ObservableObject {
 
     func clearCart() {
         repository?.clearAll()
-    }
-
-    func setGiftMode(_ isGift: Bool) {
-        if !isGift {
-            giftOptions.giftMessage = ""
-            giftOptions.includesGiftWrap = false
-        }
-        giftOptions.isGift = isGift
     }
     
 }

@@ -24,7 +24,7 @@ struct OrderSummaryView: View {
     }
 
     private var total: Double {
-        subtotal + tax
+        subtotal + tax + (viewModel.includesGiftWrap ? 2.00 : 0)
     }
 
     var body: some View {
@@ -111,6 +111,9 @@ struct OrderSummaryView: View {
             priceRow(label: "Subtotal", amount: String(format: "$%.2f", subtotal))
             priceRow(label: "Shipping", amount: "Free")
             priceRow(label: "Tax (8%)", amount: String(format: "$%.2f", tax))
+            if viewModel.includesGiftWrap {
+                priceRow(label: "Gift Wrap", amount: "+$2.00")
+            }
             Divider()
             priceRow(label: "Total", amount: String(format: "$%.2f", total))
                 .fontWeight(.bold)
