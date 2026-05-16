@@ -23,6 +23,9 @@ struct WSTabView: View {
                     .badge(tab == .cart ? (viewModel.cartItemCount > 0 ? viewModel.cartItemCount : 0) : 0)
             }
         }
+        .onAppear {
+            CollaborativeCartManager.shared.bind(repository: cartRepository)
+        }
     }
     
     @ViewBuilder

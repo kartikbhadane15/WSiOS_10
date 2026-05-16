@@ -114,6 +114,61 @@ struct CartView: View {
                                             )
                                     )
                                 }
+
+                                // MARK: - Collaborative Cart Entry Card
+                                NavigationLink(destination: CollaborativeLobbyView(viewModel: viewModel)) {
+                                    HStack(spacing: 16) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(
+                                                    LinearGradient(
+                                                        colors: [Color.blue.opacity(0.8), Color.purple.opacity(0.8)],
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
+                                                    )
+                                                )
+                                                .frame(width: 48, height: 48)
+                                            
+                                            Image(systemName: "person.2.fill")
+                                                .foregroundColor(.white)
+                                                .font(.system(size: 20))
+                                        }
+                                        
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text("Collaborative Shopping")
+                                                .font(.system(size: 16, weight: .bold))
+                                                .foregroundColor(.black)
+                                            
+                                            Text("Build a shared cart with your squad")
+                                                .font(.system(size: 12))
+                                                .foregroundColor(.secondary)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .semibold))
+                                            .foregroundColor(.gray.opacity(0.4))
+                                    }
+                                    .padding(16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(Color.white)
+                                            .shadow(color: Color.blue.opacity(0.08), radius: 10, x: 0, y: 5)
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .stroke(
+                                                LinearGradient(
+                                                    colors: [Color.blue.opacity(0.2), Color.purple.opacity(0.1)],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                ),
+                                                lineWidth: 1
+                                            )
+                                    )
+                                }
+                                .buttonStyle(PlainButtonStyle())
                             }
                             .padding(16)
                         }
@@ -189,7 +244,7 @@ struct CartView: View {
         .onDisappear {
             viewModel.hesitationDetector.cancelCartTimer()
         }
-        .onChange(of: tabBarVM.selectedTab) { newTab in
+        .onChange(of: tabBarVM.selectedTab) { _, newTab in
             let name: String
             switch newTab {
             case .cart: name = "cart"
@@ -235,7 +290,7 @@ struct CartView: View {
                 Text("It's a Gift 🎁").tag(true)
             }
             .pickerStyle(.segmented)
-            .onChange(of: viewModel.isGift) { _ in
+            .onChange(of: viewModel.isGift) { _, _ in
                 withAnimation(.easeOut(duration: 0.3)) { }
             }
 
@@ -259,7 +314,7 @@ struct CartView: View {
                             RoundedRectangle(cornerRadius: 8)
                                 .stroke(Color(.systemGray4), lineWidth: 1)
                         )
-                        .onChange(of: viewModel.giftMessage) { newValue in
+                        .onChange(of: viewModel.giftMessage) { _, newValue in
                             if newValue.count > 150 {
                                 viewModel.giftMessage = String(newValue.prefix(150))
                             }

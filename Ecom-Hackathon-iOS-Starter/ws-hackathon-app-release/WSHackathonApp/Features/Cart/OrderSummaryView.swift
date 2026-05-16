@@ -16,7 +16,10 @@ struct OrderSummaryView: View {
     @State private var country = "United States"
 
     private var subtotal: Double {
-        viewModel.items.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
+        if CollaborativeCartManager.shared.currentCartId != nil {
+            return CollaborativeCartManager.shared.totalPrice
+        }
+        return viewModel.items.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
     }
 
     private var tax: Double {
@@ -32,6 +35,39 @@ struct OrderSummaryView: View {
             VStack(spacing: 0) {
                 ScrollView {
                     VStack(spacing: 16) {
+                        // Collaborative Shopping Squad Header
+                        if CollaborativeCartManager.shared.currentCartId != nil {
+                            VStack(alignment: .leading, spacing: 12) {
+                                Text("Shopping Squad")
+                                    .font(.headline)
+                                    .padding(.horizontal, 4)
+                                
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: -12) {
+                                        ForEach(CollaborativeCartManager.shared.members) { member in
+                                            AsyncImage(url: URL(string: member.avatar)) { image in
+                                                image.resizable()
+                                            } placeholder: {
+                                                Circle().fill(Color.gray.opacity(0.3))
+                                            }
+                                            .frame(width: 40, height: 40)
+                                            .clipShape(Circle())
+                                            .overlay(Circle().stroke(Color.white, lineWidth: 2))
+                                        }
+                                        
+                                        if CollaborativeCartManager.shared.members.count > 1 {
+                                            Text("+\(CollaborativeCartManager.shared.members.count - 1) others")
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                                .padding(.leading, 16)
+                                        }
+                                    }
+                                    .padding(.horizontal, 4)
+                                }
+                            }
+                            .padding(.bottom, 8)
+                        }
+
                         itemsSection
 
                         Divider()
@@ -78,15 +114,21 @@ struct OrderSummaryView: View {
 
     private var itemsSection: some View {
         VStack(spacing: 12) {
-            ForEach(viewModel.items) { item in
+            let displayItems = CollaborativeCartManager.shared.currentCartId != nil ? CollaborativeCartManager.shared.items : viewModel.items.map { LocalCartItem(id: $0.id, name: $0.title, price: $0.price, imagePath: $0.path, quantity: $0.quantity) }
+            
+            ForEach(displayItems) { item in
                 HStack(spacing: 12) {
-                    CustomAsyncImage(url: item.imageURL)
-                        .frame(width: 60, height: 60)
-                        .cornerRadius(8)
-                        .clipped()
+                    AsyncImage(url: URL(string: AppConstants.API.imageBasePath + (item.imagePath?.trimmingCharacters(in: ["/"]) ?? ""))) { image in
+                        image.resizable()
+                    } placeholder: {
+                        Rectangle().fill(Color.gray.opacity(0.1))
+                    }
+                    .frame(width: 60, height: 60)
+                    .cornerRadius(8)
+                    .clipped()
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(item.title)
+                        Text(item.name)
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .lineLimit(2)
@@ -94,6 +136,12 @@ struct OrderSummaryView: View {
                         Text("Qty: \(item.quantity)")
                             .font(.caption)
                             .foregroundColor(.gray)
+                        
+                        if let addedBy = item.addedBy {
+                            Text("Added by \(addedBy)")
+                                .font(.system(size: 8))
+                                .foregroundColor(.blue)
+                        }
                     }
 
                     Spacer()
