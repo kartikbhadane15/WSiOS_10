@@ -1,10 +1,3 @@
-//
-//  CartView.swift
-//  WSHackathonApp
-//
-//  Created by Nilesh Mahajan on 03/04/26.
-//
-
 import SwiftUI
 
 struct CartView: View {
@@ -12,7 +5,7 @@ struct CartView: View {
     @EnvironmentObject var cartRepository: CartRepository
     @EnvironmentObject var tabBarVM: WSTabBarViewModel
     @State private var showOrderSummary = false
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -27,13 +20,10 @@ struct CartView: View {
                     }
                 } else {
                     VStack(spacing: 0) {
-                        
+
                         ScrollView {
                             VStack(spacing: 16) {
-                                if viewModel.hesitationDetector.isHesitating {
-                                    nudgeCard
-                                        .transition(.opacity.combined(with: .move(edge: .top)))
-                                }
+                                hesitationCardSection
 
                                 ForEach(viewModel.items) { item in
                                     CartItemRow(
@@ -116,47 +106,49 @@ struct CartView: View {
                                 }
                             }
                             .padding(16)
+                            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.hesitationCardState)
                         }
-                        
+
                         // MARK: - Bottom Total View
                         VStack(spacing: 8) {
-                            
+
                             HStack {
                                 Text("Subtotal")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
-                                
+
                                 Spacer()
-                                
+
                                 Text(viewModel.baseTotalText)
                                     .font(.subheadline)
                             }
-                            
+
                             if viewModel.includesGiftWrap {
                                 HStack {
                                     Text("Gift Wrap")
                                         .font(.subheadline)
                                         .foregroundColor(.gray)
-                                    
+
                                     Spacer()
-                                    
+
                                     Text("+$2.00")
                                         .font(.subheadline)
                                 }
                             }
-                            
+
                             HStack {
                                 Text(AppStrings.Cart.total)
                                     .font(.headline)
-                                
+
                                 Spacer()
-                                
+
                                 Text(viewModel.totalPriceText)
                                     .font(.headline)
                                     .fontWeight(.bold)
                             }
-                            
+
                             Button(action: {
+                                viewModel.didTapCheckout()
                                 showOrderSummary = true
                             }) {
                                 Text(AppStrings.Cart.checkoutButton)
@@ -184,47 +176,36 @@ struct CartView: View {
             Task {
                 viewModel.bind(repository: cartRepository)
             }
-            viewModel.hesitationDetector.startCartTimer()
+            viewModel.startCartTimer()
         }
         .onDisappear {
-            viewModel.hesitationDetector.cancelCartTimer()
-        }
-        .onChange(of: tabBarVM.selectedTab) { newTab in
-            let name: String
-            switch newTab {
-            case .cart: name = "cart"
-            case .home: name = "home"
-            default: name = "other"
-            }
-            viewModel.hesitationDetector.recordTabSwitch(to: name)
+            viewModel.resetSession()
         }
     }
 
-    private var nudgeCard: some View {
-        HStack(spacing: 10) {
-            Text("⭐")
-                .font(.system(size: 16))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Hesitating?")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.black)
-                Text("This product was bought by 38 people this week.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
+    @ViewBuilder
+    private var hesitationCardSection: some View {
+        switch viewModel.hesitationCardState {
+        case .hidden:
+            EmptyView()
+        case .itemBased(let item):
+            HesitationCardView(
+                variant: .itemBased(item),
+                onDismiss: { viewModel.dismissHesitationCard() },
+                onGoToCheckout: nil
+            )
+            .transition(.move(edge: .top).combined(with: .opacity))
+        case .timeBased:
+            HesitationCardView(
+                variant: .timeBased,
+                onDismiss: { viewModel.dismissHesitationCard() },
+                onGoToCheckout: {
+                    viewModel.didTapCheckout()
+                    showOrderSummary = true
+                }
+            )
+            .transition(.move(edge: .top).combined(with: .opacity))
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color(red: 255/255, green: 249/255, blue: 230/255))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(red: 245/255, green: 200/255, blue: 66/255), lineWidth: 1)
-        )
-        .cornerRadius(12)
     }
 
     @ViewBuilder
