@@ -11,6 +11,7 @@ enum TabItem: Int, CaseIterable, Identifiable {
     case home = 0
     case registry
     case cart
+    case styleSearch
     
     var id: Int { rawValue }
     
@@ -19,6 +20,7 @@ enum TabItem: Int, CaseIterable, Identifiable {
         case .home: return "Home"
         case .registry: return "Registry"
         case .cart: return "Cart"
+        case .styleSearch: return "Style Match"
         }
     }
     
@@ -27,6 +29,7 @@ enum TabItem: Int, CaseIterable, Identifiable {
         case .home: return "house"
         case .registry: return "list.bullet"
         case .cart: return "cart"
+        case .styleSearch: return "camera.viewfinder"
         }
     }
     
