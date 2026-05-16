@@ -206,11 +206,11 @@ struct CartView: View {
                 .font(.system(size: 16))
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("This is a 4.9★ bestseller.")
+                Text("Hesitating?")
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.black)
-                Text("38 people bought it this week.")
+                Text("This product was bought by 38 people this week.")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
