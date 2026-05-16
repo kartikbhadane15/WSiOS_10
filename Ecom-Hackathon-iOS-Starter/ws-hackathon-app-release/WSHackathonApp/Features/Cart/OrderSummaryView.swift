@@ -3,8 +3,10 @@ import SwiftUI
 struct OrderSummaryView: View {
     @ObservedObject var viewModel: CartViewModel
     @Environment(\.dismiss) private var dismiss
-    @State private var showAlert = false
     @State private var showEditAddress = false
+    @State private var showPayPalSheet = false
+    @State private var showSuccessScreen = false
+    @State private var selectedPaymentMethod = ""
 
     @State private var fullName = "John Doe"
     @State private var streetAddress = "123 Main St"
@@ -57,13 +59,19 @@ struct OrderSummaryView: View {
                     }
                 }
             }
-            .alert("Order Placed!", isPresented: $showAlert) {
-                Button("OK") {
+            .sheet(isPresented: $showPayPalSheet, onDismiss: {
+                if !selectedPaymentMethod.isEmpty {
+                    showSuccessScreen = true
+                }
+            }) {
+                MockPayPalSheet(total: total, selectedMethod: $selectedPaymentMethod)
+            }
+            .fullScreenCover(isPresented: $showSuccessScreen) {
+                PaymentSuccessView(total: total, paymentMethod: selectedPaymentMethod) {
+                    showSuccessScreen = false
                     viewModel.clearCart()
                     dismiss()
                 }
-            } message: {
-                Text("Your order has been placed successfully.")
             }
         }
     }
@@ -150,14 +158,18 @@ struct OrderSummaryView: View {
     }
 
     private var placeOrderButton: some View {
-        Button(action: { showAlert = true }) {
-            Text("Place Order")
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Color.black)
-                .foregroundColor(.white)
-                .cornerRadius(10)
+        Button(action: { showPayPalSheet = true }) {
+            HStack(spacing: 8) {
+                Image(systemName: "dollarsign.circle.fill")
+                    .font(.title3)
+                Text("Pay with PayPal")
+                    .fontWeight(.semibold)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.black)
+            .foregroundColor(.white)
+            .cornerRadius(10)
         }
         .padding()
         .background(Color.white)
