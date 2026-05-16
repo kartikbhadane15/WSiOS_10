@@ -4,6 +4,14 @@ struct OrderSummaryView: View {
     @ObservedObject var viewModel: CartViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showAlert = false
+    @State private var showEditAddress = false
+
+    @State private var fullName = "John Doe"
+    @State private var streetAddress = "123 Main St"
+    @State private var city = "New York"
+    @State private var state = "NY"
+    @State private var zipCode = "10001"
+    @State private var country = "United States"
 
     private var subtotal: Double {
         viewModel.items.reduce(0) { $0 + ($1.price * Double($1.quantity)) }
@@ -118,15 +126,25 @@ struct OrderSummaryView: View {
                 Text("Delivering to:")
                     .font(.caption)
                     .foregroundColor(.gray)
-                Text("123 Main St, New York, NY")
+                Text("\(streetAddress), \(city), \(state)")
                     .font(.subheadline)
                     .fontWeight(.medium)
             }
             Spacer()
-            Button(action: {}) {
+            Button(action: { showEditAddress = true }) {
                 Text("Change")
                     .font(.caption)
                     .foregroundColor(.gray)
+            }
+            .sheet(isPresented: $showEditAddress) {
+                EditAddressView(
+                    fullName: $fullName,
+                    streetAddress: $streetAddress,
+                    city: $city,
+                    state: $state,
+                    zipCode: $zipCode,
+                    country: $country
+                )
             }
         }
     }
