@@ -12,6 +12,7 @@ import Combine
 final class CartViewModel: ObservableObject {
 
     @Published private(set) var items: [CartItem] = []
+    @Published var giftOptions = GiftOptions()
     private var cancellable: AnyCancellable?
     private var repository: CartRepository?
     
@@ -30,8 +31,24 @@ final class CartViewModel: ObservableObject {
         items.isEmpty
     }
     
+    var baseTotal: Double {
+        repository?.totalPrice ?? 0
+    }
+
+    var giftWrapCharge: Double {
+        giftOptions.includesGiftWrap ? giftOptions.giftWrapPrice : 0
+    }
+
+    var finalTotal: Double {
+        baseTotal + giftWrapCharge
+    }
+
     var totalPriceText: String {
-        String(format: "$%.2f", repository?.totalPrice ?? 0)
+        String(format: "$%.2f", finalTotal)
+    }
+
+    var baseTotalText: String {
+        String(format: "$%.2f", baseTotal)
     }
     
     func removeItem(_ item: CartItem) {
@@ -54,6 +71,14 @@ final class CartViewModel: ObservableObject {
 
     func clearCart() {
         repository?.clearAll()
+    }
+
+    func setGiftMode(_ isGift: Bool) {
+        if !isGift {
+            giftOptions.giftMessage = ""
+            giftOptions.includesGiftWrap = false
+        }
+        giftOptions.isGift = isGift
     }
     
 }

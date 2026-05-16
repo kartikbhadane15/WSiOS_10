@@ -38,6 +38,9 @@ struct CartView: View {
                                     )
                                 }
 
+                                giftingSection
+                                    .padding(.top, 8)
+
                                 let mergedItems = getMergedBundleItems(for: viewModel.items.map(\.id))
                                 BundleStripView(
                                     bundleItems: mergedItems,
@@ -111,7 +114,31 @@ struct CartView: View {
                         }
                         
                         // MARK: - Bottom Total View
-                        VStack(spacing: 12) {
+                        VStack(spacing: 8) {
+                            
+                            HStack {
+                                Text("Subtotal")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                
+                                Spacer()
+                                
+                                Text(viewModel.baseTotalText)
+                                    .font(.subheadline)
+                            }
+                            
+                            if viewModel.giftOptions.includesGiftWrap {
+                                HStack {
+                                    Text("Gift Wrap")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                    
+                                    Spacer()
+                                    
+                                    Text(String(format: "+$%.2f", viewModel.giftOptions.giftWrapPrice))
+                                        .font(.subheadline)
+                                }
+                            }
                             
                             HStack {
                                 Text(AppStrings.Cart.total)
@@ -151,6 +178,114 @@ struct CartView: View {
         .onAppear {
             Task {
                 viewModel.bind(repository: cartRepository)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var giftingSection: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Button(action: {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        viewModel.setGiftMode(false)
+                    }
+                }) {
+                    Text("For Myself")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding(12)
+                        .background(viewModel.giftOptions.isGift ? Color.white : Color.black)
+                        .foregroundColor(viewModel.giftOptions.isGift ? .black : .white)
+                }
+
+                Button(action: {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        viewModel.setGiftMode(true)
+                    }
+                }) {
+                    Text("It's a Gift 🎁")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding(12)
+                        .background(viewModel.giftOptions.isGift ? Color.black : Color.white)
+                        .foregroundColor(viewModel.giftOptions.isGift ? .white : .black)
+                }
+            }
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.black, lineWidth: 1.5)
+            )
+
+            if viewModel.giftOptions.isGift {
+                VStack(spacing: 14) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "heart")
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+                        Text("Gift Message")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
+
+                    TextField("Write a message for your loved one", text: $viewModel.giftOptions.giftMessage)
+                        .font(.subheadline)
+                        .padding(12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color(.systemGray4), lineWidth: 1)
+                        )
+                        .onChange(of: viewModel.giftOptions.giftMessage) { newValue in
+                            if newValue.count > 150 {
+                                viewModel.giftOptions.giftMessage = String(newValue.prefix(150))
+                            }
+                        }
+
+                    Text("\(150 - viewModel.giftOptions.giftMessage.count) characters remaining")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+
+                    Divider()
+
+                    HStack(spacing: 8) {
+                        Image(systemName: "gift.fill")
+                            .font(.subheadline)
+                            .foregroundColor(.black)
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Add Gift Wrapping")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.black)
+
+                            Text("Premium tissue wrap & ribbon")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+
+                        Spacer()
+
+                        Text("+$2.00")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+
+                        Toggle("", isOn: $viewModel.giftOptions.includesGiftWrap)
+                            .labelsHidden()
+                            .tint(.black)
+                    }
+                }
+                .padding()
+                .background(Color.white)
+                .cornerRadius(12)
+                .shadow(color: Color(.systemGray4), radius: 2, x: 0, y: 1)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+                .padding(.top, 8)
             }
         }
     }
