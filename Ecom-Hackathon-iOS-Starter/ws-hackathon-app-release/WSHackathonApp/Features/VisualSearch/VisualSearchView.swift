@@ -1,21 +1,14 @@
 // VisualSearchView.swift
 // WSHackathonApp – Visual Search / Style Board
-//
-// Entry point: a "Find matching items" button that opens the camera or
-// photo library. After the user picks a photo the app runs on-device
-// Vision analysis (dominant colours + style tags) and then fires a
-// server-side embedding similarity search to surface matching products.
 
 import SwiftUI
 import PhotosUI
+import Photos
 
 struct VisualSearchView: View {
 
     @StateObject private var viewModel = VisualSearchViewModel()
-
-    // Photo-picker state
     @State private var selectedPhotoItem: PhotosPickerItem?
-    @State private var showSourcePicker = false
     @State private var showCamera = false
 
     var body: some View {
@@ -26,25 +19,20 @@ struct VisualSearchView: View {
                 ScrollView {
                     VStack(spacing: 24) {
 
-                        // ── Hero / inspiration header ──────────────────────
                         headerSection
 
-                        // ── Captured image preview ─────────────────────────
                         if let image = viewModel.capturedImage {
                             capturedImageSection(image: image)
                         }
 
-                        // ── Colour palette chips ───────────────────────────
                         if !viewModel.dominantColors.isEmpty {
                             ColorPaletteView(colors: viewModel.dominantColors)
                         }
 
-                        // ── Style tags ────────────────────────────────────
                         if !viewModel.styleTags.isEmpty {
                             StyleTagsView(tags: viewModel.styleTags)
                         }
 
-                        // ── Results grid ──────────────────────────────────
                         switch viewModel.state {
                         case .idle:
                             EmptyView()
@@ -67,12 +55,36 @@ struct VisualSearchView: View {
                     .padding(.horizontal, 16)
                 }
 
-                // ── Floating "Find matching items" button ─────────────────
                 if viewModel.capturedImage == nil {
                     VStack {
                         Spacer()
-                        findMatchingButton
-                            .padding(.bottom, 32)
+                        VStack(spacing: 12) {
+                            PhotosPicker(selection: $selectedPhotoItem,
+                                         matching: .images,
+                                         photoLibrary: .shared()) {
+                                Label("Choose from Library", systemImage: "photo.on.rectangle")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(Color(.systemGray5))
+                                    .foregroundStyle(Color.primary)
+                                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                            }
+
+                            Button {
+                                showCamera = true
+                            } label: {
+                                Label("Take a Photo", systemImage: "camera")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(Color(.systemGray5))
+                                    .foregroundStyle(Color.primary)
+                                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                            }
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.bottom, 32)
                     }
                 }
             }
@@ -85,27 +97,16 @@ struct VisualSearchView: View {
                             viewModel.reset()
                             selectedPhotoItem = nil
                         }
-                        .foregroundColor(.accentColor)                    }
+                        .foregroundColor(.primary)
+                    }
                 }
             }
-            // Source action sheet ─────────────────────────────────────────
-            .confirmationDialog("Choose a source", isPresented: $showSourcePicker) {
-                Button("Camera") { showCamera = true }
-
-                // PhotosPicker is handled inline via the button below
-                PhotosPickerButton(selectedItem: $selectedPhotoItem,
-                                   label: "Photo Library")
-
-                Button("Cancel", role: .cancel) {}
-            }
-            // Camera sheet ────────────────────────────────────────────────
             .sheet(isPresented: $showCamera) {
                 CameraPickerView { uiImage in
                     viewModel.process(image: uiImage)
                 }
                 .ignoresSafeArea()
             }
-            // Photo library selection ──────────────────────────────────────
             .onChange(of: selectedPhotoItem) { _, newItem in
                 guard let newItem else { return }
                 Task {
@@ -115,10 +116,11 @@ struct VisualSearchView: View {
                     }
                 }
             }
+            .onAppear {
+                PHPhotoLibrary.requestAuthorization(for: .readWrite) { _ in }
+            }
         }
     }
-
-    // MARK: – Sub-views
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -145,38 +147,6 @@ struct VisualSearchView: View {
                     .background(.ultraThinMaterial, in: Capsule())
                     .padding(10)
             }
-    }
-
-    private var findMatchingButton: some View {
-        Button {
-            showSourcePicker = true
-        } label: {
-            Label("Find matching items", systemImage: "camera.viewfinder")
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(Color.accentColor)
-                .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 14))
-                .shadow(color: .accentColor.opacity(0.4), radius: 10, y: 4)
-        }
-        .padding(.horizontal, 24)
-    }
-}
-
-// MARK: – Inline PhotosPicker helper button
-// Wraps PhotosPickerItem inside a confirmation-dialog-compatible view.
-
-private struct PhotosPickerButton: View {
-    @Binding var selectedItem: PhotosPickerItem?
-    let label: String
-
-    var body: some View {
-        PhotosPicker(selection: $selectedItem,
-                     matching: .images,
-                     photoLibrary: .shared()) {
-            Text(label)
-        }
     }
 }
 
