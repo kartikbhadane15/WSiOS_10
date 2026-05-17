@@ -3,17 +3,16 @@ import SwiftUI
 struct OrderSummaryView: View {
     @ObservedObject var viewModel: CartViewModel
     @Environment(\.dismiss) private var dismiss
-    @State private var showEditAddress = false
     @State private var showPayPalSheet = false
     @State private var showSuccessScreen = false
     @State private var selectedPaymentMethod = ""
 
-    @State private var fullName = "John Doe"
-    @State private var streetAddress = "123 Main St"
-    @State private var city = "New York"
-    @State private var state = "NY"
-    @State private var zipCode = "10001"
-    @State private var country = "United States"
+    @ObservedObject var addressManager = AddressManager.shared
+
+    // Luxury Editorial Theme Colors
+    private let walnut = Color(red: 42/255, green: 37/255, blue: 32/255)       // #2A2520 Ink
+    private let terracotta = Color(red: 107/255, green: 82/255, blue: 64/255)  // #6B5240 Accent
+    private let warmShadow = Color(red: 62/255, green: 40/255, blue: 28/255).opacity(0.04)
 
     private var subtotal: Double {
         if CollaborativeCartManager.shared.currentCartId != nil {
@@ -180,48 +179,88 @@ struct OrderSummaryView: View {
     }
 
     private var deliverySection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Delivering to:")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-                Text("\(streetAddress), \(city), \(state)")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Delivering to:")
+                .font(.caption)
+                .foregroundColor(.gray)
+            
+            HStack(spacing: 12) {
+                // Location Pin Icon
+                ZStack {
+                    Circle()
+                        .fill(walnut.opacity(0.06))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: "mappin.and.ellipse")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(terracotta)
+                }
+                
+                VStack(alignment: .leading, spacing: 3) {
+                    if let active = addressManager.activeAddress {
+                        Text(active.name)
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(walnut)
+                        
+                        Text(active.fullAddressString)
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
+                    } else {
+                        Text("Select Delivery Address")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(walnut)
+                        
+                        Text("Add an address for seamless shipping")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                
+                Spacer()
+                
+                // "Change" Button goes directly to AddressManagementView
+                NavigationLink(destination: AddressManagementView()) {
+                    Text("Change")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(walnut)
+                        .cornerRadius(16)
+                        .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            Spacer()
-            Button(action: { showEditAddress = true }) {
-                Text("Change")
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-            .sheet(isPresented: $showEditAddress) {
-                EditAddressView(
-                    fullName: $fullName,
-                    streetAddress: $streetAddress,
-                    city: $city,
-                    state: $state,
-                    zipCode: $zipCode,
-                    country: $country
-                )
-            }
+            .padding(14)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: warmShadow, radius: 6, x: 0, y: 3)
         }
     }
 
     private var placeOrderButton: some View {
-        Button(action: { showPayPalSheet = true }) {
+        let hasAddress = addressManager.activeAddress != nil
+        return Button(action: {
+            if hasAddress {
+                showPayPalSheet = true
+            }
+        }) {
             HStack(spacing: 8) {
                 Image(systemName: "dollarsign.circle.fill")
                     .font(.title3)
-                Text("Pay with PayPal")
+                Text(hasAddress ? "Pay with PayPal" : "Select Address to Pay")
                     .font(.system(size: 16, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(Color(red: 42/255, green: 37/255, blue: 32/255))
+            .background(hasAddress ? Color(red: 42/255, green: 37/255, blue: 32/255) : Color.gray)
             .foregroundColor(.white)
             .clipShape(Capsule())
         }
+        .disabled(!hasAddress)
         .padding()
         .background(Color.white)
         .cornerRadius(24.0)

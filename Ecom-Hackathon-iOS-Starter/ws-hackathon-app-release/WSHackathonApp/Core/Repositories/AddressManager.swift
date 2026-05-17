@@ -48,11 +48,8 @@ class AddressManager: ObservableObject {
            let decoded = try? JSONDecoder().decode([UserAddress].self, from: data) {
             self.savedAddresses = decoded
         } else {
-            // Default mock addresses
-            self.savedAddresses = [
-                UserAddress(id: "1", name: "Home 🏠", latitude: 37.7749, longitude: -122.4194, houseNo: "Apt 4B, 4th Floor", building: "The Williams Tower", areaStreet: "150 Post St", landmark: "Near Union Square", receiverName: "Kartik Bhadane", receiverPhone: "+91 9876543210"),
-                UserAddress(id: "2", name: "Office 💼", latitude: 37.7891, longitude: -122.4014, houseNo: "Suite 1200", building: "Salesforce Tower", areaStreet: "415 Mission St", landmark: "Opposite Salesforce Plaza", receiverName: "Kartik Bhadane", receiverPhone: "+91 9876543210")
-            ]
+            // Do not use pre-populated mock addresses at start
+            self.savedAddresses = []
         }
         
         if let data = UserDefaults.standard.data(forKey: "ws_active_address"),

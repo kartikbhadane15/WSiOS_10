@@ -69,4 +69,16 @@ enum AppStrings {
         static let moveToCartButton = "Move to Cart"
         static let removeButton = "Remove"
     }
+    
+    enum TableScape {
+        static let title = "TableScape Vision"
+        static let itemsOnTable = "Items on Table"
+        static let instructionSubtitle = "Visualize dinnerware and table settings in 3D on your tabletop"
+        static let step1 = "Find a clear, well-lit surface or table"
+        static let step2 = "Slowly scan the surface by moving your device"
+        static let step3 = "Tap the screen to place items from your cart"
+        static let itemsReady = "items ready"
+        static let arNotSupported = "AR Not Supported"
+        static let arNotSupportedDesc = "This device or simulator does not support augmented reality features."
+    }
 }
