@@ -14,6 +14,59 @@ struct WSTabView: View {
     @EnvironmentObject var wishlistManager: WishlistManager
     @EnvironmentObject var toastManager: ToastManager
     
+    init() {
+        let appearance = UITabBarAppearance()
+        
+        // Configure standard tab item badge appearance with clear background and red bullet
+        appearance.stackedLayoutAppearance.normal.badgeBackgroundColor = .clear
+        appearance.stackedLayoutAppearance.normal.badgeTextAttributes = [
+            .foregroundColor: UIColor.red,
+            .font: UIFont.systemFont(ofSize: 24, weight: .bold)
+        ]
+        
+        appearance.stackedLayoutAppearance.selected.badgeBackgroundColor = .clear
+        appearance.stackedLayoutAppearance.selected.badgeTextAttributes = [
+            .foregroundColor: UIColor.red,
+            .font: UIFont.systemFont(ofSize: 24, weight: .bold)
+        ]
+        
+        appearance.inlineLayoutAppearance.normal.badgeBackgroundColor = .clear
+        appearance.inlineLayoutAppearance.normal.badgeTextAttributes = [
+            .foregroundColor: UIColor.red,
+            .font: UIFont.systemFont(ofSize: 24, weight: .bold)
+        ]
+        
+        appearance.inlineLayoutAppearance.selected.badgeBackgroundColor = .clear
+        appearance.inlineLayoutAppearance.selected.badgeTextAttributes = [
+            .foregroundColor: UIColor.red,
+            .font: UIFont.systemFont(ofSize: 24, weight: .bold)
+        ]
+        
+        appearance.compactInlineLayoutAppearance.normal.badgeBackgroundColor = .clear
+        appearance.compactInlineLayoutAppearance.normal.badgeTextAttributes = [
+            .foregroundColor: UIColor.red,
+            .font: UIFont.systemFont(ofSize: 24, weight: .bold)
+        ]
+        
+        appearance.compactInlineLayoutAppearance.selected.badgeBackgroundColor = .clear
+        appearance.compactInlineLayoutAppearance.selected.badgeTextAttributes = [
+            .foregroundColor: UIColor.red,
+            .font: UIFont.systemFont(ofSize: 24, weight: .bold)
+        ]
+        
+        // Set the badge position offset slightly downwards so it floats perfectly in the top right
+        let offset = UIOffset(horizontal: 0, vertical: 4)
+        appearance.stackedLayoutAppearance.normal.badgeTitlePositionAdjustment = offset
+        appearance.stackedLayoutAppearance.selected.badgeTitlePositionAdjustment = offset
+        appearance.inlineLayoutAppearance.normal.badgeTitlePositionAdjustment = offset
+        appearance.inlineLayoutAppearance.selected.badgeTitlePositionAdjustment = offset
+        appearance.compactInlineLayoutAppearance.normal.badgeTitlePositionAdjustment = offset
+        appearance.compactInlineLayoutAppearance.selected.badgeTitlePositionAdjustment = offset
+        
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+    
     var body: some View {
         ZStack(alignment: .top) {
             TabView(selection: $viewModel.selectedTab) {
@@ -23,7 +76,7 @@ struct WSTabView: View {
                             Label(tab.title, systemImage: tab.icon)
                         }
                         .tag(tab)
-                        .badge(tab == .cart ? (viewModel.cartItemCount > 0 ? viewModel.cartItemCount : 0) : 0)
+                        .badge(tab == .cart ? (cartRepository.items.count > 0 ? "•" : nil) : nil)
                 }
             }
             

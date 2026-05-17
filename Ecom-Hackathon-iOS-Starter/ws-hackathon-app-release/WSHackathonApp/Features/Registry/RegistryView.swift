@@ -20,11 +20,17 @@ struct RegistryView: View {
     @EnvironmentObject var cartRepo: CartRepository
     @EnvironmentObject var tabBarVM: WSTabBarViewModel
     
+    // Luxury Editorial Theme Colors Aligned with Lovable AI Specifications
+    private let ivory = Color(red: 250/255, green: 247/255, blue: 240/255)     // #FAF7F0 Base page background
+    private let walnut = Color(red: 42/255, green: 37/255, blue: 32/255)       // #2A2520 Ink - deep near-black primary typography
+    private let tan = Color(red: 221/255, green: 211/255, blue: 194/255)       // #DDD3C2 Stone Warm (borders, muted areas)
+    private let terracotta = Color(red: 107/255, green: 82/255, blue: 64/255)  // #6B5240 Walnut rich brown accent
+    
     var body: some View {
         NavigationStack(path: $tabBarVM.registryPath) {
             
             ZStack {
-                Color(.systemGray6)
+                ivory
                     .ignoresSafeArea()
                 
                 ScrollView {
@@ -99,20 +105,21 @@ private extension RegistryView {
         }
         .frame(maxWidth: .infinity)
         .background(Color.white)
-        .cornerRadius(12)
+        .cornerRadius(16)
+        .shadow(color: Color(red: 62/255, green: 40/255, blue: 28/255).opacity(0.035), radius: 6, x: 0, y: 3)
         .padding(.horizontal, 16)
     }
     
     var createRegistryButton: some View {
         HStack(spacing: 12) {
             Image(systemName: AppImages.Registry.plus)
-                .foregroundColor(.black)
+                .foregroundColor(walnut)
             Text(AppStrings.Registry.create)
-                .font(.headline)
-                .foregroundColor(.black)
+                .font(.system(size: 15, weight: .bold))
+                .foregroundColor(walnut)
             Spacer()
             Image(systemName: AppImages.Registry.chevron)
-                .foregroundColor(.gray)
+                .foregroundColor(terracotta.opacity(0.5))
         }
         .frame(maxWidth: .infinity)
         .padding()
@@ -122,8 +129,8 @@ private extension RegistryView {
         VStack(alignment: .leading, spacing: 12) {
             
             Text(AppStrings.Registry.topReasons)
-                .font(.headline)
-                .foregroundColor(.primary)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(walnut)
             
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(Array(viewModel.instructions.enumerated()), id: \.element.id) { index, item in
@@ -140,7 +147,8 @@ private extension RegistryView {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white)
-        .cornerRadius(12)
+        .cornerRadius(16)
+        .shadow(color: Color(red: 62/255, green: 40/255, blue: 28/255).opacity(0.035), radius: 6, x: 0, y: 3)
         .padding(.horizontal, 16)
     }
     
@@ -148,19 +156,19 @@ private extension RegistryView {
         VStack(alignment: .leading, spacing: 4) {
             
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(walnut)
             
             Text(description)
-                .font(.footnote)
-                .foregroundColor(.gray)
+                .font(.system(size: 11))
+                .foregroundColor(terracotta.opacity(0.7))
         }
     }
     
     var emptyItemsView: some View {
         Text(AppStrings.Registry.noItemsAdded)
-            .foregroundColor(.gray)
+            .font(.system(size: 13, weight: .medium))
+            .foregroundColor(terracotta.opacity(0.6))
             .padding()
     }
     
@@ -200,7 +208,8 @@ private extension RegistryView {
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.white)
-        .cornerRadius(12)
+        .cornerRadius(16)
+        .shadow(color: Color(red: 62/255, green: 40/255, blue: 28/255).opacity(0.035), radius: 6, x: 0, y: 3)
         .padding(.horizontal, 16)
     }
 }

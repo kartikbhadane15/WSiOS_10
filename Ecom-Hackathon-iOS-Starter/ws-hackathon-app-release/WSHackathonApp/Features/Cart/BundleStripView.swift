@@ -62,13 +62,12 @@ struct BundleStripView: View {
     private func footerView(for items: [BundleItem]) -> some View {
         Button(action: { onAddBundle(items) }) {
             Text("Add all")
-                .font(.subheadline)
-                .fontWeight(.semibold)
+                .font(.system(size: 16, weight: .semibold))
                 .frame(maxWidth: .infinity)
-                .padding(10)
-                .background(Color.black)
+                .padding(.vertical, 16)
+                .background(Color(red: 42/255, green: 37/255, blue: 32/255))
                 .foregroundColor(.white)
-                .cornerRadius(8)
+                .clipShape(Capsule())
         }
     }
 }

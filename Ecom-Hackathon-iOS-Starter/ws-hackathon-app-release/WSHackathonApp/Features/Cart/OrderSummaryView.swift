@@ -214,17 +214,17 @@ struct OrderSummaryView: View {
                 Image(systemName: "dollarsign.circle.fill")
                     .font(.title3)
                 Text("Pay with PayPal")
-                    .fontWeight(.semibold)
+                    .font(.system(size: 16, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.black)
+            .padding(.vertical, 16)
+            .background(Color(red: 42/255, green: 37/255, blue: 32/255))
             .foregroundColor(.white)
-            .cornerRadius(10)
+            .clipShape(Capsule())
         }
         .padding()
         .background(Color.white)
-        .cornerRadius(16.0)
-        .shadow(color: Color(.systemGray4), radius: 4, x: 0, y: -2)
+        .cornerRadius(24.0)
+        .shadow(color: Color(red: 62/255, green: 40/255, blue: 28/255).opacity(0.04), radius: 8, x: 0, y: -4)
     }
 }

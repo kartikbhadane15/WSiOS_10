@@ -11,7 +11,24 @@ import Combine
 @MainActor
 final class CartRepository: ObservableObject {
     
-    @Published private(set) var items: [CartItem] = []
+    @Published private(set) var items: [CartItem] = [] {
+        didSet {
+            saveToUserDefaults()
+        }
+    }
+    
+    init() {
+        if let data = UserDefaults.standard.data(forKey: "ws_local_cart_items"),
+           let decoded = try? JSONDecoder().decode([CartItem].self, from: data) {
+            self.items = decoded
+        }
+    }
+    
+    private func saveToUserDefaults() {
+        if let encoded = try? JSONEncoder().encode(items) {
+            UserDefaults.standard.set(encoded, forKey: "ws_local_cart_items")
+        }
+    }
     
     // MARK: - Add Item
     func add(product: ProductItem, quantity: Int = 1) {

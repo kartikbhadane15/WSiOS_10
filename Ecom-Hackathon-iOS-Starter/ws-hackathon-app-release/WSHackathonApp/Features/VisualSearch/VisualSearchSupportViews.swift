@@ -174,8 +174,15 @@ struct ErrorView: View {
                 .font(.subheadline)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            Button("Try Again", action: retry)
-                .buttonStyle(.borderedProminent)
+            Button(action: retry) {
+                Text("Try Again")
+                    .font(.system(size: 16, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color(red: 42/255, green: 37/255, blue: 32/255))
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
+            }
         }
         .padding(24)
         .frame(maxWidth: .infinity)

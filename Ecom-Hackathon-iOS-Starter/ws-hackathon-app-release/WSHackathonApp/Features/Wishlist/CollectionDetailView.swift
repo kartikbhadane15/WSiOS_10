@@ -108,12 +108,12 @@ struct CollectionDetailView: View {
                             Image(systemName: "cart.fill")
                             Text("Move All to Cart")
                         }
-                        .fontWeight(.bold)
+                        .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Color.black)
-                        .cornerRadius(12)
+                        .padding(.vertical, 16)
+                        .background(Color(red: 42/255, green: 37/255, blue: 32/255))
+                        .clipShape(Capsule())
                     }
                 }
                 .padding(16)

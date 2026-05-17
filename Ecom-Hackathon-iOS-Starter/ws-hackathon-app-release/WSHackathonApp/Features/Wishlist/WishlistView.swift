@@ -16,6 +16,13 @@ struct WishlistView: View {
     @State private var activeSmartFilters: Set<SmartTag> = []
     @State private var showingDestinationSheet = false
     
+    // Luxury Editorial Theme Colors Aligned with Lovable AI Specifications
+    private let ivory = Color(red: 250/255, green: 247/255, blue: 240/255)     // #FAF7F0 Base page background
+    private let walnut = Color(red: 42/255, green: 37/255, blue: 32/255)       // #2A2520 Ink - deep near-black primary typography
+    private let tan = Color(red: 221/255, green: 211/255, blue: 194/255)       // #DDD3C2 Stone Warm (borders, muted areas)
+    private let terracotta = Color(red: 107/255, green: 82/255, blue: 64/255)  // #6B5240 Walnut rich brown accent
+    private let warmShadow = Color(red: 62/255, green: 40/255, blue: 28/255).opacity(0.04) // Soft shadow
+    
     var filteredItems: [WishlistItem] {
         var items = wishlistManager.wishlistItems
         if !activeSmartFilters.isEmpty {
@@ -28,14 +35,14 @@ struct WishlistView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            Color(UIColor.systemGroupedBackground).ignoresSafeArea()
+            ivory.ignoresSafeArea()
             
             if isLoading {
                 VStack {
                     Spacer()
                     ProgressView("Waking up AI Engine...")
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundColor(terracotta)
                     Spacer()
                 }
             } else {
@@ -48,28 +55,28 @@ struct WishlistView: View {
                                 if wishlistManager.selectionMode == .none {
                                     HStack {
                                         Image(systemName: "folder.fill")
-                                            .foregroundColor(.blue)
+                                            .foregroundColor(terracotta)
                                             .font(.title2)
                                         
                                         Text("Collections")
-                                            .font(.headline)
-                                            .foregroundColor(.primary)
+                                            .font(.system(size: 15, weight: .bold))
+                                            .foregroundColor(walnut)
                                         
                                         Spacer()
                                         
                                         HStack(spacing: 4) {
                                             Text("\(wishlistManager.collections.count)")
                                                 .font(.subheadline)
-                                                .foregroundColor(.secondary)
+                                                .foregroundColor(terracotta.opacity(0.8))
                                             Image(systemName: "chevron.right")
                                                 .font(.caption)
-                                                .foregroundColor(.gray)
+                                                .foregroundColor(terracotta.opacity(0.5))
                                         }
                                     }
                                     .padding()
-                                    .background(Color(.systemBackground))
+                                    .background(Color.white)
                                     .cornerRadius(16)
-                                    .shadow(color: Color.black.opacity(0.03), radius: 8, x: 0, y: 4)
+                                    .shadow(color: warmShadow, radius: 8, x: 0, y: 4)
                                 } else {
                                     EmptyView()
                                 }

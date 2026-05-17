@@ -11,10 +11,16 @@ struct VisualSearchView: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var showCamera = false
 
+    // Luxury Editorial Theme Colors Aligned with Lovable AI Specifications
+    private let ivory = Color(red: 250/255, green: 247/255, blue: 240/255)     // #FAF7F0 Base page background
+    private let walnut = Color(red: 42/255, green: 37/255, blue: 32/255)       // #2A2520 Ink - deep near-black primary typography
+    private let tan = Color(red: 221/255, green: 211/255, blue: 194/255)       // #DDD3C2 Stone Warm (borders, muted areas)
+    private let terracotta = Color(red: 107/255, green: 82/255, blue: 64/255)  // #6B5240 Walnut rich brown accent
+
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground).ignoresSafeArea()
+                ivory.ignoresSafeArea()
 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -63,24 +69,24 @@ struct VisualSearchView: View {
                                          matching: .images,
                                          photoLibrary: .shared()) {
                                 Label("Choose from Library", systemImage: "photo.on.rectangle")
-                                    .font(.headline)
+                                    .font(.system(size: 16, weight: .semibold))
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 16)
-                                    .background(Color(.systemGray5))
-                                    .foregroundStyle(Color.primary)
-                                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                                    .background(walnut)
+                                    .foregroundColor(.white)
+                                    .clipShape(Capsule())
                             }
 
                             Button {
                                 showCamera = true
                             } label: {
                                 Label("Take a Photo", systemImage: "camera")
-                                    .font(.headline)
+                                    .font(.system(size: 16, weight: .semibold))
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 16)
-                                    .background(Color(.systemGray5))
-                                    .foregroundStyle(Color.primary)
-                                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                                    .background(walnut)
+                                    .foregroundColor(.white)
+                                    .clipShape(Capsule())
                             }
                         }
                         .padding(.horizontal, 24)
@@ -97,7 +103,7 @@ struct VisualSearchView: View {
                             viewModel.reset()
                             selectedPhotoItem = nil
                         }
-                        .foregroundColor(.primary)
+                        .foregroundColor(walnut)
                     }
                 }
             }
@@ -125,10 +131,11 @@ struct VisualSearchView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Find your perfect match")
-                .font(.title2.bold())
+                .font(.system(size: 22, weight: .bold))
+                .foregroundColor(walnut)
             Text("Photograph your kitchen décor and we'll surface products that share its colour palette and style.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(terracotta.opacity(0.8))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 8)
