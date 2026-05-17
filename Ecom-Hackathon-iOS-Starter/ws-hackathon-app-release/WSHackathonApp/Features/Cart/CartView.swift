@@ -1,3 +1,8 @@
+//
+//  CartView.swift
+//  WSHackathonApp
+//
+
 import SwiftUI
 
 struct CartView: View {
@@ -5,6 +10,8 @@ struct CartView: View {
     @EnvironmentObject var cartRepository: CartRepository
     @EnvironmentObject var tabBarVM: WSTabBarViewModel
     @State private var showOrderSummary = false
+    @EnvironmentObject var wishlistManager: WishlistManager
+    @EnvironmentObject var toastManager: ToastManager
 
     var body: some View {
         NavigationStack {
@@ -25,12 +32,30 @@ struct CartView: View {
                             VStack(spacing: 16) {
                                 hesitationCardSection
 
-                                ForEach(viewModel.items) { item in
-                                    CartItemRow(
-                                        item: item,
-                                        onAdd: { viewModel.add(item) },
-                                        onRemove: { viewModel.removeItem(item) }
-                                    )
+                                VStack(alignment: .leading, spacing: 16) {
+                                    Text("Active Cart")
+                                        .font(.headline)
+                                        .padding(.horizontal, 4)
+                                    
+                                    ForEach(viewModel.items) { item in
+                                        CartItemRow(
+                                            item: item,
+                                            onAdd: { viewModel.add(item) },
+                                            onRemove: { viewModel.removeItem(item) },
+                                            onMoveToWishlist: {
+                                                withAnimation {
+                                                    // Remove entirely from cart
+                                                    for _ in 0..<item.quantity {
+                                                        cartRepository.remove(productId: item.id)
+                                                    }
+                                                    // Add to wishlist
+                                                    let pItem = ProductItem(id: item.id, title: item.title, price: item.price, path: item.path)
+                                                    wishlistManager.addToWishlist(product: pItem)
+                                                    toastManager.show(message: "Moved to Wishlist")
+                                                }
+                                            }
+                                        )
+                                    }
                                 }
 
                                 giftingSection
@@ -226,6 +251,29 @@ struct CartView: View {
                 }
             }
             .navigationTitle(AppStrings.Cart.title)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink(destination: WishlistView()) {
+                        ZStack(alignment: .topTrailing) {
+                            Image(systemName: "heart")
+                                .font(.system(size: 20))
+                                .foregroundColor(.primary)
+                                .padding(.trailing, 8)
+                                .padding(.top, 4)
+                            
+                            if !wishlistManager.wishlistItems.isEmpty {
+                                Text("\(wishlistManager.wishlistItems.count)")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(4)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 4, y: -4)
+                            }
+                        }
+                    }
+                }
+            }
         }
         .onAppear {
             Task {
