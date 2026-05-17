@@ -59,4 +59,14 @@ enum AppStrings {
         static let eventDate = "Event Date"
         static let createYourRegistry = "Create Your Registry"
     }
+    
+    enum Wishlist {
+        static let title = "Wishlist"
+        static let emptyMessage = "Your Wishlist is waiting ✨\nSave products to revisit them later."
+        static let emptyButton = "Continue Shopping"
+        static let savedToast = "Saved to Wishlist ✨"
+        static let removedToast = "Removed from Wishlist"
+        static let moveToCartButton = "Move to Cart"
+        static let removeButton = "Remove"
+    }
 }

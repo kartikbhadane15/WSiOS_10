@@ -12,6 +12,7 @@ struct CartItemRow: View {
     let item: CartItem
     let onAdd: () -> Void
     let onRemove: () -> Void
+    let onMoveToWishlist: () -> Void
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -51,6 +52,17 @@ struct CartItemRow: View {
                 }
                 .font(.title3)
                 .foregroundColor(.black)
+                
+                Button(action: onMoveToWishlist) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "heart")
+                        Text("Move to Wishlist")
+                    }
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.gray)
+                }
+                .padding(.top, 4)
             }
             
             Spacer()
