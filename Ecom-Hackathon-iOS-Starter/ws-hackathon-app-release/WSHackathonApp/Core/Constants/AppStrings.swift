@@ -72,13 +72,15 @@ enum AppStrings {
     
     enum TableScape {
         static let title = "TableScape Vision"
-        static let itemsOnTable = "Items on Table"
-        static let instructionSubtitle = "Visualize dinnerware and table settings in 3D on your tabletop"
-        static let step1 = "Find a clear, well-lit surface or table"
-        static let step2 = "Slowly scan the surface by moving your device"
-        static let step3 = "Tap the screen to place items from your cart"
-        static let itemsReady = "items ready"
-        static let arNotSupported = "AR Not Supported"
-        static let arNotSupportedDesc = "This device or simulator does not support augmented reality features."
+        static let matchMyStyle = "View on your Space!"
+        static let matchMyStyleSubtitle = "See items on your table in AR"
+        static let instructionSubtitle = "Visualize your cart items on your own table using augmented reality"
+        static let step1 = "Point camera at your table"
+        static let step2 = "Wait for surface detection"
+        static let step3 = "Tap to place your items"
+        static let itemsOnTable = "Items on your table"
+        static let itemsReady = "items ready to place"
+        static let arNotSupported = "AR Not Available"
+        static let arNotSupportedDesc = "This device does not support ARKit. Please try on a compatible iPhone or iPad."
     }
 }

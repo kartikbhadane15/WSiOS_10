@@ -7,6 +7,7 @@ import SwiftUI
 
 struct CartView: View {
     @StateObject private var viewModel = CartViewModel()
+    @State private var showTableScapeAR = false
     @EnvironmentObject var cartRepository: CartRepository
     @EnvironmentObject var tabBarVM: WSTabBarViewModel
     @State private var showOrderSummary = false
@@ -280,6 +281,7 @@ struct CartView: View {
 
                                 // MARK: - Match My Style AR Button
                                 Button(action: {
+                                    showTableScapeAR = true
                                 }) {
                                     HStack(spacing: 12) {
                                         ZStack {
@@ -302,11 +304,11 @@ struct CartView: View {
                                         }
 
                                         VStack(alignment: .leading, spacing: 2) {
-                                            Text("Match My Style")
+                                            Text(AppStrings.TableScape.matchMyStyle)
                                                 .font(.system(size: 16, weight: .semibold))
                                                 .foregroundColor(.black)
-
-                                            Text("See items on your table in AR")
+                                            
+                                            Text(AppStrings.TableScape.matchMyStyleSubtitle)
                                                 .font(.system(size: 12))
                                                 .foregroundColor(.gray)
                                         }
@@ -481,6 +483,9 @@ struct CartView: View {
             default: name = "other"
             }
             viewModel.hesitationDetector.recordTabSwitch(to: name)
+        }
+        .fullScreenCover(isPresented: $showTableScapeAR) {
+            TableScapeVisionView(cartItems: viewModel.items)
         }
     }
 
