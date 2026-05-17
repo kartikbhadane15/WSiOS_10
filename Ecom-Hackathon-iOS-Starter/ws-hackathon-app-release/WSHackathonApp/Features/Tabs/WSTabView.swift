@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WSTabView: View {    
+struct WSTabView: View {
     @EnvironmentObject var viewModel: WSTabBarViewModel
     @EnvironmentObject var cartRepository: CartRepository
     @EnvironmentObject var registryRepository: RegistryRepository
@@ -37,6 +37,8 @@ struct WSTabView: View {
             RegistryView()
         case .cart:
             CartView()
+        case .styleSearch:
+            VisualSearchView()
         }
     }
 }
